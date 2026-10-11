@@ -1,4 +1,4 @@
-name: CI — Build & Test
+name: CD — Build & Test | Deploy to Render
 
 on:
   push:
@@ -49,6 +49,8 @@ jobs:
   # Deploy only if the `build` job succeeds
   deploy:
     runs-on: ubuntu-22.04
+    permissions:
+      deployments: write
     needs: build
     if: needs.build.result == 'success'
     steps:
@@ -56,5 +58,8 @@ jobs:
         with:
           service_id: ${{ secrets.RENDER_SERVICE_ID }}
           api_key: ${{ secrets.RENDER_API_KEY }}
+          github_deployment: true
+          deployment_environment: 'production' # e.g., production, staging
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           wait_deploy: true
         
